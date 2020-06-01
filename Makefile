@@ -20,6 +20,10 @@ CSI_IMAGE_NAME=$(if $(ENV_CSI_IMAGE_NAME),$(ENV_CSI_IMAGE_NAME),quay.io/cephcsi/
 CSI_IMAGE_VERSION=$(if $(ENV_CSI_IMAGE_VERSION),$(ENV_CSI_IMAGE_VERSION),v2.1-canary)
 CSI_IMAGE=$(CSI_IMAGE_NAME):$(CSI_IMAGE_VERSION)
 
+QCS_CSI_IMAGE_NAME=qcs-cephcsi
+QCS_CSI_IMAGE_VERSION=alpha
+QCS_CSI_IMAGE=$(QCS_CSI_IMAGE_NAME):$(QCS_CSI_IMAGE_VERSION)
+
 $(info cephcsi image settings: $(CSI_IMAGE_NAME) version $(CSI_IMAGE_VERSION))
 ifndef GIT_COMMIT
 GIT_COMMIT=$(shell git rev-list -1 HEAD)
@@ -83,6 +87,9 @@ containerized-build: .devel-container-id
 
 image-cephcsi:
 	$(CONTAINER_CMD) build -t $(CSI_IMAGE) -f deploy/cephcsi/image/Dockerfile . --build-arg GOLANG_VERSION=1.13.8 --build-arg CSI_IMAGE_NAME=$(CSI_IMAGE_NAME) --build-arg CSI_IMAGE_VERSION=$(CSI_IMAGE_VERSION) --build-arg GIT_COMMIT=$(GIT_COMMIT) --build-arg GO_ARCH=$(GOARCH) $(BASE_IMAGE_ARG)
+
+qcs-image-cephcsi:
+	$(CONTAINER_CMD) build -t $(QCS_CSI_IMAGE) -f deploy/qcs-cephcsi/image/Dockerfile . --build-arg GOLANG_VERSION=1.13.8 --build-arg CSI_IMAGE_NAME=$(QCS_CSI_IMAGE_NAME) --build-arg CSI_IMAGE_VERSION=$(QCS_CSI_IMAGE_VERSION) --build-arg GIT_COMMIT=$(GIT_COMMIT) --build-arg GO_ARCH=$(GOARCH)
 
 push-image-cephcsi: image-cephcsi
 	$(CONTAINER_CMD) tag $(CSI_IMAGE) $(CSI_IMAGE)-$(GOARCH)
